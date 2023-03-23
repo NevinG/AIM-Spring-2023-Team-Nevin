@@ -5,7 +5,7 @@ import copy
 
 class EvolutionSimulator:
     def __init__(self):
-        self.POPULATION_SIZE = 10
+        self.POPULATION_SIZE = 500
         self.population = [] #population of individuals
         self.create_population()
 
@@ -33,6 +33,12 @@ class EvolutionSimulator:
     def show_images(self):
         for person in self.population:
             display(person.generate_image())
+    
+    def get_images(self):
+        images = []
+        for person in self.population:
+            images.append(person.generate_image())
+        return images
 
     #should sort self.population in order of each individuals fitness 
     # (high to low) (this must be called after fitness() otherwise there 
