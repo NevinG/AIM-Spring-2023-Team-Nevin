@@ -5,7 +5,7 @@ import copy
 
 class EvolutionSimulator:
     def __init__(self):
-        self.POPULATION_SIZE = 500
+        self.POPULATION_SIZE = 10
         self.population = [] #population of individuals
         self.create_population()
 
