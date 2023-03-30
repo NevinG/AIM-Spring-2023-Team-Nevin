@@ -10,12 +10,12 @@ class Individual:
     # }
 
     def __init__(self):
-        self.NUMBER_OF_POINTS = random.randint(1,100)
+        self.NUMBER_OF_POINTS = random.randint(50,100)
         self.WIDTH = 100
         self.HEIGHT = 100
         self.movement_mutate_multiplier = 2
         self.radius_mutate_multiplier = 1
-        self.color_mutate_multiplier = 10
+        self.color_mutate_multiplier = 2
         self.points = [] #each point in self.points is defined on line 5-10
         self.create_initial_values()
 
@@ -39,7 +39,8 @@ class Individual:
 
         #chance to remove an existsing point
         if random.randint(0,1) == 1:
-            self.points.pop(random.randrange(len(self.points)))
+            if(len(self.points) > 0):
+                self.points.pop(random.randrange(len(self.points)))
 
         for point in self.points:
             point["x"] += random.randint(-self.movement_mutate_multiplier, self.movement_mutate_multiplier)
@@ -59,6 +60,8 @@ class Individual:
                 point["radius"] = self.WIDTH / 2
             if point["radius"] < 1:
                 point["radius"] = 1
+            if point["radius"] > 10:
+                point["radius"] = 10
 
             point["color"] += random.randint(-self.color_mutate_multiplier, self.color_mutate_multiplier)
             if point["color"] > 255:
@@ -85,6 +88,6 @@ class Individual:
                 "x": random.randint(0, self.WIDTH - 1),
                 "y": random.randint(0, self.HEIGHT - 1),
                 "color": random.randint(0, 255),
-                "radius": random.randint(1,5)
+                "radius": random.randint(1,3)
             }
             self.points.append(point)
