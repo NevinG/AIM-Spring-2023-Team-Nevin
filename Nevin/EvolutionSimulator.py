@@ -1,8 +1,10 @@
+import numpy
 from Individual import Individual
 from IPython.display import display # to display images
 from tensorflow import keras
 import tensorflow as tf
 import copy
+import imagehash
 
 class EvolutionSimulator:
     def __init__(self, pop_size):
@@ -15,8 +17,7 @@ class EvolutionSimulator:
     #should remove the second half of self.population [a,b,c,d] 
     # after kill_population = [a,b]
     def kill_population(self):
-        #self.population = self.population[:len(self.population) // 2]
-        self.population = self.population[0:1]
+        self.population = self.population[:len(self.population) // 2]
 
     #doubles the population. For each indivuals in self.population 
     # make an identical copy of them, and then call the .mutate method 
@@ -32,8 +33,13 @@ class EvolutionSimulator:
         self.evaluate_fitness()
 
     def advance_generation(self):
-        self.kill_population()
-        self.reproduce()
+        while True:
+            newIndivual = copy.deepcopy(self.population[0])
+            newIndivual.mutate()
+            self.fitness2(newIndivual)
+            if newIndivual.fitness > self.population[0].fitness:
+                self.population[0] = newIndivual
+                return
 
     #create self.POPULATION_SIZE individuals add add them to self.population
     def create_population(self):
@@ -45,12 +51,17 @@ class EvolutionSimulator:
         for person in self.population:
             display(person.generate_image())
             
-    #display the first image only
+    #display the first and last image only
     def show_first_and_last_image(self):
         display(self.population[0].generate_image())
         print(self.population[0].fitness)
         display(self.population[self.POPULATION_SIZE - 1].generate_image())
         print(self.population[self.POPULATION_SIZE - 1].fitness)
+    
+    #display the first image only
+    def show_first_image(self):
+        display(self.population[0].generate_image())
+        print(self.population[0].fitness)
     
     def get_images(self):
         images = []
@@ -76,3 +87,16 @@ class EvolutionSimulator:
          img_array = tf.expand_dims(img_array, 0) # Create a batch
          fitness = self.model.predict(img_array, verbose = 0)
          individual.fitness = fitness[0][0]
+
+    #uses a target image to deduce fitness
+    def fitness2(self, individual):
+        hash0 = imagehash.average_hash(individual.generate_image())
+        hash1 = imagehash.average_hash(self.target_image) 
+        individual.fitness = -1 * abs(hash0 - hash1)
+
+    
+    def set_fitness_target_image(self, image):
+        self.target_image = image
+        self.fitness2(self.population[0])
+
+        
