@@ -10,7 +10,7 @@ class Individual:
     # }
 
     def __init__(self):
-        self.NUMBER_OF_POINTS = random.randint(50,100)
+        self.NUMBER_OF_POINTS = random.randint(0,0)
         self.WIDTH = 100
         self.HEIGHT = 100
         self.movement_mutate_multiplier = 2
@@ -28,46 +28,13 @@ class Individual:
     #change the radius of an existing point
     def mutate(self):
         #chance to add a new point
-        if random.randint(0,1) == 1:
-            point = {
-                "x": random.randint(0, self.WIDTH - 1),
-                "y": random.randint(0, self.HEIGHT - 1),
-                "color": random.randint(0, 255),
-                "radius": random.randint(1,5)
-            }
-            self.points.append(point)
-
-        #chance to remove an existsing point
-        if random.randint(0,1) == 1:
-            if(len(self.points) > 0):
-                self.points.pop(random.randrange(len(self.points)))
-
-        for point in self.points:
-            point["x"] += random.randint(-self.movement_mutate_multiplier, self.movement_mutate_multiplier)
-            if point["x"] > self.WIDTH - 1:
-                point["x"] = self.WIDTH - 1
-            if point["x"] < 0:
-                point["x"] = 0
-
-            point["y"] += random.randint(-self.movement_mutate_multiplier, self.movement_mutate_multiplier)
-            if point["y"] > self.WIDTH - 1:
-                point["y"] = self.WIDTH - 1
-            if point["y"] < 0:
-                point["y"] = 0
-
-            point["radius"] += random.randint(-self.radius_mutate_multiplier, self.radius_mutate_multiplier)
-            if point["radius"] > self.WIDTH / 2:
-                point["radius"] = self.WIDTH / 2
-            if point["radius"] < 1:
-                point["radius"] = 1
-            if point["radius"] > 10:
-                point["radius"] = 10
-
-            point["color"] += random.randint(-self.color_mutate_multiplier, self.color_mutate_multiplier)
-            if point["color"] > 255:
-                point["color"] = 255
-            if point["color"] < 0:
-                point["color"] = 0
+        point = {
+            "x": random.randint(0, self.WIDTH - 1),
+            "y": random.randint(0, self.HEIGHT - 1),
+            "color": random.randint(0, 255),
+            "radius": random.randint(1,7)
+        }
+        self.points.append(point)
 
     #this is defined for you, i used PIL to create images based on self.points
     # and its attributes
@@ -88,6 +55,6 @@ class Individual:
                 "x": random.randint(0, self.WIDTH - 1),
                 "y": random.randint(0, self.HEIGHT - 1),
                 "color": random.randint(0, 255),
-                "radius": random.randint(1,3)
+                "radius": random.randint(1,7)
             }
             self.points.append(point)
