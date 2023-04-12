@@ -36,7 +36,7 @@ class EvolutionSimulator:
         while True:
             newIndivual = copy.deepcopy(self.population[0])
             newIndivual.mutate()
-            self.fitness2(newIndivual)
+            self.fitness(newIndivual)
             if newIndivual.fitness > self.population[0].fitness:
                 self.population[0] = newIndivual
                 return
@@ -86,7 +86,7 @@ class EvolutionSimulator:
          img_array = tf.keras.utils.img_to_array(image)
          img_array = tf.expand_dims(img_array, 0) # Create a batch
          fitness = self.model.predict(img_array, verbose = 0)
-         individual.fitness = fitness[0][0]
+         individual.fitness = fitness[0][0] - fitness[0][1]
 
     #uses a target image to deduce fitness
     def fitness2(self, individual):
