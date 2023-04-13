@@ -33,13 +33,24 @@ class EvolutionSimulator:
         self.evaluate_fitness()
 
     def advance_generation(self):
-        while True:
-            newIndivual = copy.deepcopy(self.population[0])
-            newIndivual.mutate()
-            self.fitness(newIndivual)
-            if newIndivual.fitness > self.population[0].fitness:
-                self.population[0] = newIndivual
-                return
+        potentialReplacements = []
+        while len(potentialReplacements) < 5:
+            while True:
+                newIndivual = copy.deepcopy(self.population[0])
+                newIndivual.mutate()
+                self.fitness(newIndivual)
+                if newIndivual.fitness > self.population[0].fitness:
+                    potentialReplacements.append(newIndivual)
+                    break
+        #only use the best out of the five potential replacements
+        best = None
+        for i in range(5):
+            if best == None:
+                best = potentialReplacements[i]
+            elif potentialReplacements[i].fitness > best.fitness:
+                best = potentialReplacements[i]
+        self.population[0] = best
+
 
     #create self.POPULATION_SIZE individuals add add them to self.population
     def create_population(self):
