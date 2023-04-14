@@ -1,13 +1,18 @@
+import numpy
 from Individual import Individual
 from IPython.display import display # to display images
-import random
+from tensorflow import keras
+import tensorflow as tf
 import copy
+import imagehash
 
 class EvolutionSimulator:
-    def __init__(self):
-        self.POPULATION_SIZE = 500
+    def __init__(self, pop_size):
+        self.model = keras.models.load_model("my_model")
+        self.POPULATION_SIZE = pop_size
         self.population = [] #population of individuals
         self.create_population()
+        self.evaluate_fitness()
 
     #should remove the second half of self.population [a,b,c,d] 
     # after kill_population = [a,b]
@@ -19,10 +24,33 @@ class EvolutionSimulator:
     # on that individual
     def reproduce(self):
         n = len(self.population)
-        for i in range(n):
-            newIndivual = copy.deepcopy(self.population[i])
-            newIndivual.mutate()
-            self.population.append(newIndivual)
+        while(n < self.POPULATION_SIZE):
+            for i in range(n):
+                newIndivual = copy.deepcopy(self.population[i])
+                newIndivual.mutate()
+                self.population.append(newIndivual)
+            n = len(self.population)
+        self.evaluate_fitness()
+
+    def advance_generation(self):
+        potentialReplacements = []
+        while len(potentialReplacements) < 5:
+            while True:
+                newIndivual = copy.deepcopy(self.population[0])
+                newIndivual.mutate()
+                self.fitness(newIndivual)
+                if newIndivual.fitness > self.population[0].fitness:
+                    potentialReplacements.append(newIndivual)
+                    break
+        #only use the best out of the five potential replacements
+        best = None
+        for i in range(5):
+            if best == None:
+                best = potentialReplacements[i]
+            elif potentialReplacements[i].fitness > best.fitness:
+                best = potentialReplacements[i]
+        self.population[0] = best
+
 
     #create self.POPULATION_SIZE individuals add add them to self.population
     def create_population(self):
@@ -33,6 +61,18 @@ class EvolutionSimulator:
     def show_images(self):
         for person in self.population:
             display(person.generate_image())
+            
+    #display the first and last image only
+    def show_first_and_last_image(self):
+        display(self.population[0].generate_image())
+        print(self.population[0].fitness)
+        display(self.population[self.POPULATION_SIZE - 1].generate_image())
+        print(self.population[self.POPULATION_SIZE - 1].fitness)
+    
+    #display the first image only
+    def show_first_image(self):
+        display(self.population[0].generate_image())
+        print(self.population[0].fitness)
     
     def get_images(self):
         images = []
@@ -53,4 +93,21 @@ class EvolutionSimulator:
     # going to create a machine learning model to do this for us later. 
     # For now set the fitness equal to the number of points
     def fitness(self, individual):
-         individual.fitness = len(individual.points)
+         image = individual.generate_image()
+         img_array = tf.keras.utils.img_to_array(image)
+         img_array = tf.expand_dims(img_array, 0) # Create a batch
+         fitness = self.model.predict(img_array, verbose = 0)
+         individual.fitness = fitness[0][0] - fitness[0][1]
+
+    #uses a target image to deduce fitness
+    def fitness2(self, individual):
+        hash0 = imagehash.average_hash(individual.generate_image())
+        hash1 = imagehash.average_hash(self.target_image) 
+        individual.fitness = -1 * abs(hash0 - hash1)
+
+    
+    def set_fitness_target_image(self, image):
+        self.target_image = image
+        self.fitness2(self.population[0])
+
+        
