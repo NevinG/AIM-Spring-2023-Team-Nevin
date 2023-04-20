@@ -10,7 +10,7 @@ class Individual:
     # }
 
     def __init__(self):
-        self.NUMBER_OF_POINTS = random.randint(0,0)
+        self.NUMBER_OF_POINTS = random.randint(0,3)
         self.WIDTH = 100
         self.HEIGHT = 100
         self.movement_mutate_multiplier = 2
@@ -31,7 +31,7 @@ class Individual:
         point = {
             "x": random.randint(0, self.WIDTH - 1),
             "y": random.randint(0, self.HEIGHT - 1),
-            "color": random.randint(0, 255),
+            "color": [random.randint(0, 255),random.randint(0, 255),random.randint(0, 255)],
             "radius": random.randint(1,7)
         }
         self.points.append(point)
@@ -44,7 +44,7 @@ class Individual:
         for point in self.points:
             draw.ellipse([(point["x"] - point["radius"],point["y"] - point["radius"]),
                           (point["x"] + point["radius"], point["y"] + point["radius"])],
-                            fill = (point["color"], point["color"], point["color"]))
+                            fill = (point["color"][0], point["color"][1], point["color"][2]))
         return image
 
     #fill in self.points with self.NUMBER_OF_POINTS points with 
@@ -54,7 +54,7 @@ class Individual:
             point = {
                 "x": random.randint(0, self.WIDTH - 1),
                 "y": random.randint(0, self.HEIGHT - 1),
-                "color": random.randint(0, 255),
+                "color": [random.randint(0, 255),random.randint(0, 255),random.randint(0, 255)],
                 "radius": random.randint(1,7)
             }
             self.points.append(point)

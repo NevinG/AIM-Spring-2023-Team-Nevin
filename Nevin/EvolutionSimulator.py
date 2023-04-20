@@ -14,6 +14,14 @@ class EvolutionSimulator:
         self.create_population()
         self.evaluate_fitness()
 
+    def __init__(self, pop_size, fitness_target):
+        self.model = keras.models.load_model("my_model")
+        self.POPULATION_SIZE = pop_size
+        self.population = [] #population of individuals
+        self.fitness_target = fitness_target
+        self.create_population()
+        self.evaluate_fitness()
+
     #should remove the second half of self.population [a,b,c,d] 
     # after kill_population = [a,b]
     def kill_population(self):
@@ -79,6 +87,9 @@ class EvolutionSimulator:
         for person in self.population:
             images.append(person.generate_image())
         return images
+    
+    def get_first_image(self):
+        return self.population[0].generate_image()
 
     #should sort self.population in order of each individuals fitness 
     # (high to low) (this must be called after fitness() otherwise there 
@@ -97,17 +108,7 @@ class EvolutionSimulator:
          img_array = tf.keras.utils.img_to_array(image)
          img_array = tf.expand_dims(img_array, 0) # Create a batch
          fitness = self.model.predict(img_array, verbose = 0)
-         individual.fitness = fitness[0][0] - fitness[0][1]
-
-    #uses a target image to deduce fitness
-    def fitness2(self, individual):
-        hash0 = imagehash.average_hash(individual.generate_image())
-        hash1 = imagehash.average_hash(self.target_image) 
-        individual.fitness = -1 * abs(hash0 - hash1)
-
-    
-    def set_fitness_target_image(self, image):
-        self.target_image = image
-        self.fitness2(self.population[0])
+         individual.fitness = fitness[0][self.fitness_target]
+        
 
         
